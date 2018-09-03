@@ -1,0 +1,40 @@
+*/ {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 15px;
+    color: #999999;
+}
+
+h1, h3, h5, li, p, span, strong, div {
+    color: #999999;
+    text-align: center;
+}
+
+ul {
+    list-style-type:none;
+}
+
+nav {
+    width: 100%;
+    opacity: 0.8;
+}
+
+.jumbotron {
+    margin: 5% 5% 2% 5%;
+    background-color: #343a40!important;
+    background-size: 100%;
+    height: 500px;
+    opacity: .85;
+}
+
+body {
+    background-image: url("../images/bg.jpg");
+    background-repeat: repeat;
+}
+
+.playerBOX {
+    border: 3px outset #555555;
+}
+
+.playerROW {
+    height: 250px;
+}

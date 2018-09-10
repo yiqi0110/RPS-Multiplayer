@@ -58,19 +58,17 @@
             <div class="container-fluid">
                 <div class="row justify-content-around playerROW">
                     <div id="userDiv" class="col-md-4 border rounded">
-                        <strong id="intermissionUserMessage">Waiting for player . . .</strong>
                         <div id="holdsUserName" class="row justify-content-center"></div>
                         <div id="holdsAttackOptions" class="row justify-content-center">
-                            <button id="rock" class="btn btn-secondary">ROCK</button>
-                            <button id="paper" class="btn btn-secondary">PAPER</button>
-                            <button id="scissor" class="btn btn-secondary">SCISSOR</button>
+                            <button value="rock" class="btn btn-secondary rock">ROCK</button>
+                            <button value="paper" class="btn btn-secondary paper">PAPER</button>
+                            <button value="scissor" class="btn btn-secondary scissor">SCISSOR</button>
                         </div>
                         <div id="holdsUserAttackDecision" class="row justify-content-center"></div>
                         <div id="holdsUserWinsAndLoses" class="row justify-content-center"></div>
                     </div>
                     <div id="opponentDiv" class="col-md-4 border rounded">
-                        <strong id="intermissionOpponentMessage">Waiting for player . . .</strong>
-                        <div id="holdsOpponentUserName" class="row justify-content-center"></div>
+                        <div id="holdsOpponentUserName" class="row justify-content-center">WAITING FOR OTHER PLAYER</div>
                         <div id="holdsOpponentAttackDecision" class="row justify-content-center"></div>
                         <div id="holdsOpponentWinsAndLoses" class="row justify-content-center"></div>
 

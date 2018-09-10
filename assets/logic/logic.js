@@ -22,31 +22,75 @@ $('.jumbotron').fadeIn(3000, function () {
 
 // variable declarations
 // =======================================================
-var userName = '';
-var opponentName = '';
+var userName = [];
 var userAttackDecision = '';
 var opponentAttackDecision = '';
 var userWinsAndLoses = '';
 var opponentWinsAndLoses = '';
-var numberOfUsers = 0;
+var wins = 0;
+var loses = 0;
 var database = firebase.database();
-var connectionsRef = database.ref("/connections");
-var connectedRef = database.ref(".info/connected");
+var connection = database.ref("/users");
 
 // functions
 // =======================================================
 
 // Function to create a user into the database
-function addUser2database (id, user) {
-    user = userName;
-    database.ref('/users' + id).set({
-        username: user,
-    });
+function addUser2database(users, wins, loses) {
+    users = userName;
+    var userData = {
+        username: users,
+        wins: wins,
+        loses: loses,
+        attack: ""
+    };
+    database.ref('/users').push(userData);
 };
 
 
 // game fucntionality
 // =======================================================
+
+
+$(".btn").on("click", function (event) {
+    event.preventDefault();
+    if ($(this).val() === "rock") {
+        userAttackDecision = "rock";
+    };
+    if ($(this).val() === "scissor") {
+        userAttackDecision = "scissor";
+    };
+    if ($(this).val() === "paper") {
+        userAttackDecision = "paper";
+    };
+    console.log(userAttackDecision);
+});
+
+
+// this should actually be something that looks at the batabases stuff
+$(".btn").on("click", function (event) {
+    event.preventDefault();
+
+    // if for game logic
+    //      on click of both action buttons, chekc through this stuff. maybe if both players choices return true and theyre originally set to false?
+
+    if (((userAttackDecision === "rock") && (opponentAttackDecision === "rock")) || ((userAttackDecision === "paper") && (opponentAttackDecision === "paper")) || ((userAttackDecision === "scissor") && (opponentAttackDecision === "scissor"))) {
+        //  no score to either party
+        console.log("neither party recieves a point");
+    };
+    if ((userAttackDecision === "rock" && opponentAttackDecision === "scissor") || (userAttackDecision === "scissor" && opponentAttackDecision === "paper") || (userAttackDecision === "paper" && opponentAttackDecision === "rock")) {
+        //  score 1 to your player score
+        console.log("the user received a point");
+        wins++;
+    };
+    if ((userAttackDecision === "rock" && opponentAttackDecision === "paper") || (userAttackDecision === "scissor" && opponentAttackDecision === "rock") || (userAttackDecision === "paper" && opponentAttackDecision === "scissor")) {
+        //  score 1 to your oppenonent score
+        console.log("the opponent received a point");
+        loses++;
+    };
+
+    // end of game logic
+});
 
 // validates that the user has a name
 $("button#submit2Start").on("click", function (event) {
@@ -71,41 +115,59 @@ $("button#submit2Start").on("click", function (event) {
 
 // when starting the game this is what you press to get into the game
 $(document.body).on("click", "#startGame", function (event) {
-    numberOfUsers++;
     event.preventDefault();
     console.log(userName);
-    $("#intermissionMessage").hide();
     $("section#startScreen").hide();
     $("section#gameScreen").show();
     $("#holdsUserName").text(userName);
-
+    addUser2database(userName, wins, loses);
+    
+    
     // sends user names to data base
-
-    connectedRef.on("value", function (snap) {
     
-        // If they are connected..
-        if (snap.val()) {
-            
-            // Add user to the connections list.
-            var con = connectionsRef.push(true);
-            console.log(con);
-            var userId = con.path.pieces_[1];
-            connectionsRef.push(addUser2database(userId, userName));
-    
-            // Remove user from the connection list when they disconnect.
-            con.onDisconnect().remove();
-        }
-    });     // end of connected
 }); // end of start game function
 
+// sends the last added player info to the page, this of course requires the players to be on at the same time
+database.ref('/users').on("child_added", function(childSnapshot) {
+    console.log(childSnapshot);
+    var player2Name = childSnapshot.val().username;
+    var player2 = childSnapshot.node_.children_.root_.value.value_;
 
-// When first loaded or when the connections list changes...
-connectionsRef.on("value", function (snap) {
-    $("#intermissionOpponentMessage").hide();
-    console.log("this is working");
-    $("#holdsOpponentUserName").text(snap.userName);
+    if (player2Name === userName){
+        // if one player
+        console.log("butttttt");
+        // console.log(childSnapshot.node_.children_.root_.value.value_);
+
+    } else{
+        // if two players
+        console.log(player2Name);
+        $("#holdsOpponentUserName").text(player2);
+    }
+
+    // childSnapshot.onDisconnect().remove();       // attempt at removing this child node from data base
+});
+
+connection.on("value", function (snap) {
     
-});     // end of connections
+    // If they are connected..
+    var randKEY = snap.node_.children_.root_.key;
+    console.log(randKEY);
+    
+    if (snap.val()) {
+        // Remove user from the connection list when they disconnect.
+        // 
+        database.ref(randKEY).onDisconnect().remove();
+    }
+    
+    // makes sure there are only two players
+    console.log(snap.numChildren());
+    if (snap.numChildren() === 3){
+        alert("too many users, try again later");
+    }
+});
+
+
+
 
 /*
 at this point I have the users that go into the page to show up in the firebase as a connected and as users. at this point however I am unable to get the second user to appear on in the opponent div in the html file. I also have not set up the rock paper scissor logic portion of the file, where rock > scissor > paper > rock . . . etc.
@@ -115,7 +177,7 @@ I was also intially going to have the opponents choice appear in a hidden object
 
 // when ever the wins, loses, and of course people online change, then update wins, loses, and next player and so on
 // database.ref("/playerData").on("value"), function(snapshot) {
-//     if (snapshot.child("userName").exists()){
-
+    //     if (snapshot.child("userName").exists()){
+        
 //     }
 // };  // end of data gatherer
